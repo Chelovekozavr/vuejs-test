@@ -1,25 +1,38 @@
 <template>
-  <ul class="contacts-list">
-    <AddContact 
-      @add-contact="addNewContact"
+  <div>
+    <AddContact
+        @add-contact="addNewContact"
     />
-    <Contact
-      v-for="contact of sortedContacts"
-      :key="contact.id"
-      :contact="contact"
+    <ul class="contacts-list">
+      <Contact
+        v-for="contact of sortedContacts"
+        :key="contact.id"
+        :contact="contact"
+        @delete-contact="deleteContact"
+        @set-confirm="setDeleteConfirmatioVisibility"
+      />
+    </ul>
+    <DeleteConfirmation
+      v-if="deleteConfirmatioVisibility"
+      @delete-cancel="setDeleteConfirmatioVisibility"
+      @delete-ok="deleteContact"
+      :name="contactNameToDlete"
     />
-
-
-  </ul>
+  </div>
 </template>
 
 <script>
 import Contact from './Contact.vue'
 import AddContact from './AddContact'
+import DeleteConfirmation from './DeleteConfirmation'
+
 export default {
   data() {
     return {
-      sortedContacts: this.contacts.sort((a, b) => a.name.localeCompare(b.name))
+      sortedContacts: this.sortContacts(this.contacts),
+      deleteConfirmatioVisibility: false,
+      contactIdToDelete: null,
+      contactNameToDlete: ''
     }
   },
 
@@ -29,12 +42,29 @@ export default {
 
   components: {
     Contact,
-    AddContact
+    AddContact,
+    DeleteConfirmation
   },
 
   methods: {
+    sortContacts(contacts) {
+      return contacts.sort((a, b) => a.name.localeCompare(b.name));
+    },
+
     addNewContact(newContact) {
       this.sortedContacts.push(newContact)
+      this.sortContacts(this.sortedContacts)
+    },
+
+    deleteContact() {
+      this.sortedContacts = this.sortedContacts.filter(contact => contact.id !== this.contactIdToDelete);
+      this.deleteConfirmatioVisibility = !this.contactIdToDelete;
+    },
+
+    setDeleteConfirmatioVisibility(name, id) {
+      this.deleteConfirmatioVisibility = !this.deleteConfirmatioVisibility;
+      this.contactIdToDelete = id;
+      this.contactNameToDlete = name;
     }
   }
 }
@@ -42,6 +72,10 @@ export default {
 
 <style lang="css">
   .contacts-list {
+    display: grid;
+    grid-auto-columns: auto;
+    position: absolute;
+
     padding: 0;
     margin: 0;
     list-style: none;

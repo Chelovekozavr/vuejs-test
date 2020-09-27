@@ -9,20 +9,24 @@
     >
       <button
         type="submit"
+        id="submit"
         class="add-contact-button"
         @click="changeVisibilty"
       >
         {{ buttonSymbol }}
       </button>
-      <span v-if="!inputVisibility">
-        Add contact
-      </span>
+      <label for="submit">
+        <span v-if="!inputVisibility">
+          Add contact
+        </span>
+      </label>
+
       <input
         v-if="inputVisibility"
         class="add-contact-input"
         type="text"
         v-model="newContactName"
-        maxlength="20"
+        maxlength="15"
       >
       <button
         type="submit"
@@ -30,12 +34,11 @@
         class="add-contact-button"
         @click="changeVisibilty"
       >
-      Х
+        &#10005;
       </button>
     </form>
 
   </div>
-
 </template>
 
 <script>
@@ -76,35 +79,38 @@ export default {
   }
 }
 
-
-
 </script>
 
 <style lang="css">
   .add-contact {
     display: flex;
     align-items: center;
-    margin: 20px;
+
+    margin: 10px;
+    padding: 20px;
     height: 70px;
     width: 380px;
-    padding: 20px;
     border-radius: 15px;
-    font-size: 30px;
-    background:  rgb(136, 135, 135);
+
+    font-size: 26px;
+    background:  #7b7b7b;
     color: whitesmoke;
   }
 
   .add-contact-button {
     display: flex;
-    margin-right: 20px;
     align-items: center;
     justify-content: center;
+
+    margin-right: 20px;
     width: 70px;
     height: 70px;
     border-radius: 50%;
-    background-color: rgb(182, 182, 182);
-    font-size: 38px;
+  
+    background-color: #adabac;
     color: white;
+
+    font-size: 38px;
     cursor: pointer;
     border: none;
     outline: none;
@@ -112,10 +118,6 @@ export default {
 
   .add-contact-button:last-child {
     margin-right: 0;
-  }
-
-  .add-contact-button:hover {
-    font-size: 58px;
   }
 
   .add_contact_form {
@@ -131,19 +133,17 @@ export default {
   .add-contact-input {
     display: flex;
     margin-right: 20px;
-    width: 200px;
-
+    width: 190px;
+    height: 50px;
     border-radius: 5px;
 
-
-    height: 50px;
-
     background-color: rgb(182, 182, 182);
-
-    color: white;
+    color: whitesmoke;
+  
     cursor: pointer;
     border: none;
     outline: none;
+  
     font-family: inherit;
     font-size: 100%;
   }

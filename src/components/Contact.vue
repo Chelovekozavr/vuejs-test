@@ -1,21 +1,27 @@
 <template>
-  <div class="contact">
-    <span
-      v-if="contact.name.split(' ').length > 1"
-      class="initials">{{
-        contact.name.split(' ')
-        .slice(0, 2)
-        .map(word => word.slice(0, 1))
-        .join('')
-        .toUpperCase()
-        }}
-    </span>
-    <span
-      v-else
-      class="initials">{{contact.name.slice(0, 1)}}
-    </span>
-    <li>{{contact.name}}</li>
-  </div>
+  <li
+    class="contact"
+    @mouseenter="mouseHover"
+    @mouseleave="mouseHover"
+  >
+    <div class="contact_container">
+      <span
+        class="contact__initials"
+      >
+        {{getContactInitials(contact.name)}}
+      </span>
+      <span>
+        {{contact.name}}
+      </span>
+    </div>
+    <button
+      v-if="deleteButtonVisibility"
+      class="contact__delete_button"
+      @click="$emit('set-confirm', contact.name, contact.id)"
+    >
+      &#10005;
+    </button>
+  </li>
 </template>
 
 <script>
@@ -25,31 +31,84 @@ export default {
       type: Object,
       required: true
     }
+  },
+
+  data() {
+    return {
+      deleteButtonVisibility: false,
+    }
+  },
+
+  methods: {
+    getContactInitials(name) {
+      if(name.split(' ').length > 1) {
+
+        return name
+          .split(' ')
+          .slice(0, 2)
+          .map(word => word.slice(0, 1))
+          .join('')
+          .toUpperCase();
+      }
+
+      return name.slice(0, 1).toUpperCase();
+    },
+
+    mouseHover() {
+      console.log(1234)
+      this.deleteButtonVisibility = !this.deleteButtonVisibility;
+    }
   }
 }
 </script>
 
-<style lang="css">
+<style lang="scss">
+  .contact_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   .contact {
     display: flex;
     align-items: center;
-    margin: 20px;
-    height: 70px;
+    justify-content: space-between;
+    margin: 10px;
     padding: 20px;
-    border-radius: 15px;
-    font-size: 30px;
-    background:  rgb(136, 135, 135);
-    color: whitesmoke;
-  }
 
-  .initials {
-    display: flex;
-    margin-right: 20px;
-    align-items: center;
-    justify-content: center;
-    width: 70px;
     height: 70px;
-    border-radius: 50%;
-    background-color: rgb(182, 182, 182);
+    width: 380px;
+
+    border-radius: 15px;
+    font-size: 26px;
+    background: #7b7b7b;
+    color: whitesmoke;
+
+    &__initials {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      margin-right: 20px;
+      width: 70px;
+      height: 70px;
+    
+      border-radius: 50%;
+      background-color: #adabac;
+    }
+
+    &__delete_button {
+      height: 45px;
+      width: 45px;
+
+      border-radius: 50%;
+      font-size: 20px;
+      outline: none;
+      border: none;
+
+      color: inherit;
+      background-color: #adabac;
+      cursor: pointer;
+    }
   }
 </style>
