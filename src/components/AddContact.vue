@@ -20,6 +20,14 @@
           Add contact
         </span>
       </label>
+<!--
+*
+*
+*
+* v-show !!!!
+*
+*
+-->
 
       <input
         v-if="inputVisibility"
@@ -42,43 +50,42 @@
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      newContactName: '',
-      inputVisibility: false,
-    }
-  },
-
-  methods: {
-    onSubmit() {
-      if(this.newContactName.trim()) {
-        const newContact = {
-          id: Date.now(),
-          name: this.newContactName
-        }
-
-      this.$emit('add-contact', newContact);
-      this.newContactName = '';
+  export default {
+    data() {
+      return {
+        newContactName: '',
+        inputVisibility: false,
       }
     },
 
-    changeVisibilty() {
-      this.inputVisibility = !this.inputVisibility
-    }
-  },
+    methods: {
+      onSubmit() {
+        if(this.newContactName.trim()) {
+          const newContact = {
+            id: Date.now(),
+            name: this.newContactName
+          }
 
-  computed: {
-    buttonSymbol: function() {
-      if (!this.inputVisibility) {
-        return '+';
-      } else {
-        return String.fromCharCode(10003);
+        this.$emit('add-contact', newContact);
+        this.newContactName = '';
+        }
+      },
+
+      changeVisibilty() {
+        this.inputVisibility = !this.inputVisibility
+      }
+    },
+
+    computed: {
+      buttonSymbol: function() {
+        if (!this.inputVisibility) {
+          return '+';
+        } else {
+          return String.fromCharCode(10003);
+        }
       }
     }
   }
-}
-
 </script>
 
 <style lang="css">

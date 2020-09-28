@@ -10,14 +10,14 @@
       >
         {{getContactInitials(contact.name)}}
       </span>
-      <span>
+      <span @click="$emit('contact-details', contact.id)">
         {{contact.name}}
       </span>
     </div>
     <button
-      v-if="deleteButtonVisibility"
+      v-show="deleteButtonVisibility"
       class="contact__delete_button"
-      @click="$emit('set-confirm', contact.name, contact.id)"
+      @click="$emit('delete-contact', contact.id)"
     >
       &#10005;
     </button>
@@ -25,41 +25,40 @@
 </template>
 
 <script>
-export default {
-  props: {
-    contact: {
-      type: Object,
-      required: true
-    }
-  },
-
-  data() {
-    return {
-      deleteButtonVisibility: false,
-    }
-  },
-
-  methods: {
-    getContactInitials(name) {
-      if(name.split(' ').length > 1) {
-
-        return name
-          .split(' ')
-          .slice(0, 2)
-          .map(word => word.slice(0, 1))
-          .join('')
-          .toUpperCase();
+  export default {
+    props: {
+      contact: {
+        type: Object,
+        required: true
       }
-
-      return name.slice(0, 1).toUpperCase();
     },
 
-    mouseHover() {
-      console.log(1234)
-      this.deleteButtonVisibility = !this.deleteButtonVisibility;
+    data() {
+      return {
+        deleteButtonVisibility: false,
+      }
+    },
+
+    methods: {
+      getContactInitials(name) {
+        if(name.split(' ').length > 1) {
+
+          return name
+            .split(' ')
+            .slice(0, 2)
+            .map(word => word.slice(0, 1))
+            .join('')
+            .toUpperCase();
+        }
+
+        return name.slice(0, 1).toUpperCase();
+      },
+
+      mouseHover() {
+        this.deleteButtonVisibility = !this.deleteButtonVisibility;
+      }
     }
   }
-}
 </script>
 
 <style lang="scss">

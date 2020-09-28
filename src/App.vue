@@ -14,10 +14,11 @@ export default {
   data() {
     return {
       contacts: [
-        {id: 1, name: 'Andrew'},
-        {id: 2, name: 'Katya tinder'},
-        {id: 3, name: 'Nazar work'},
-        {id: 4, name: 'Anya'}
+        {id: 1, name: 'Andrew', number: '+380631234567'},
+        {id: 2, name: 'Katya tinder', number: '+380731234567'},
+        {id: 3, name: 'Nazar work', number: '+38011111111', email:'nazar@gmail.com'},
+        {id: 4, name: 'Anya', email: 'anya@gmail.com'},
+        {id: 5, name: 'Oleg Gym'}
       ]
     }
   },

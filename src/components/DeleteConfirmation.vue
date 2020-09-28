@@ -10,7 +10,8 @@
       >
         &#10003;
       </button>
-      <button class="delete_confirmation_delete_button cancel"
+      <button
+        class="delete_confirmation_delete_button cancel"
         @click="$emit('delete-cancel')"
       >
         &#10005;
@@ -20,11 +21,11 @@
 </template>
 
 <script>
-export default {
-  props: {
-    name: String,
-  },
-}
+  export default {
+    props: {
+      name: String,
+    },
+  }
 </script>
 
 <style lang="scss" scoped>
@@ -35,7 +36,7 @@ export default {
 
 
     position: fixed;
-    top: calc(50% - (290px / 2));
+    top: 200px;
     left: calc(50% - (290px / 2));
 
     padding: 20px;
@@ -77,7 +78,7 @@ export default {
   }
 
   .delete_backdrop {
-    box-shadow: 0 0 0 100vw rgba(0,0,0,0.7);
+    box-shadow: 0 0 0 100vw rgba(0,0,0,0.8);
   }
 
 </style>
