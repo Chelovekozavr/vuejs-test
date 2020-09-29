@@ -3,21 +3,21 @@
     class="contact"
     @mouseenter="mouseHover"
     @mouseleave="mouseHover"
+    @click.prevent="$emit('contact-details', contact.id)"
   >
     <div class="contact_container">
-      <span
-        class="contact__initials"
-      >
+      <span class="contact__initials">
         {{getContactInitials(contact.name)}}
       </span>
-      <span @click="$emit('contact-details', contact.id)">
-        {{contact.name}}
+      <span>
+        {{ contact.name }}
       </span>
     </div>
     <button
+      id="btn"
       v-show="deleteButtonVisibility"
       class="contact__delete_button"
-      @click="$emit('delete-contact', contact.id)"
+      @click.stop="$emit('delete-contact', contact.id)"
     >
       &#10005;
     </button>
@@ -25,40 +25,42 @@
 </template>
 
 <script>
-  export default {
-    props: {
-      contact: {
-        type: Object,
-        required: true
+export default {
+  props: {
+    contact: {
+      type: Object,
+      required: true
+    }
+  },
+
+  data() {
+    return {
+      deleteButtonVisibility: false,
+      isActive: false
+    }
+  },
+
+  methods: {
+    getContactInitials(name) {
+      if(name.split(' ').length > 1) {
+
+        return name
+          .split(' ')
+          .slice(0, 2)
+          .map(word => word.slice(0, 1))
+          .join('')
+          .toUpperCase();
       }
+
+      return name.slice(0, 1).toUpperCase();
     },
 
-    data() {
-      return {
-        deleteButtonVisibility: false,
-      }
-    },
-
-    methods: {
-      getContactInitials(name) {
-        if(name.split(' ').length > 1) {
-
-          return name
-            .split(' ')
-            .slice(0, 2)
-            .map(word => word.slice(0, 1))
-            .join('')
-            .toUpperCase();
-        }
-
-        return name.slice(0, 1).toUpperCase();
-      },
-
-      mouseHover() {
-        this.deleteButtonVisibility = !this.deleteButtonVisibility;
-      }
+    mouseHover() {
+      this.isActive = !this.isActive;
+      this.deleteButtonVisibility = !this.deleteButtonVisibility;
     }
   }
+}
 </script>
 
 <style lang="scss">
@@ -80,8 +82,15 @@
 
     border-radius: 15px;
     font-size: 26px;
-    background: #7b7b7b;
+    background-color: #7b7b7b;
     color: whitesmoke;
+
+    cursor: pointer;
+    transition: 0.5s;
+
+    &:hover {
+      background-color: #666666;
+    }
 
     &__initials {
       display: flex;
@@ -108,6 +117,15 @@
       color: inherit;
       background-color: #adabac;
       cursor: pointer;
+      transition: 0.2s;
+
+      &:hover {
+       background-color: #a1a1a1;
+      }
+
+      &:active {
+        transform: scale(0.8);
+      }
     }
   }
 </style>

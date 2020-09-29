@@ -16,7 +16,9 @@
       v-if="contactDetailsVisibility"
       :contact="contact"
       @hide-contact-details="contactDetails"
-      :key="id"
+      @delete-key="forceRerender"
+      @add-key="forceRerender"
+      :key="componentKey"
     />
 
     <DeleteConfirmation
@@ -29,67 +31,72 @@
 </template>
 
 <script>
-  import Contact from './Contact.vue'
-  import AddContact from './AddContact'
-  import DeleteConfirmation from './DeleteConfirmation'
-  import ContactDetails from './ContactDetails'
+import Contact from './Contact.vue';
+import AddContact from './AddContact';
+import DeleteConfirmation from './DeleteConfirmation';
+import ContactDetails from './ContactDetails';
 
 
-  export default {
-    data() {
-      return {
-        sortedContacts: this.sortContacts(this.contacts),
-        deleteConfirmatioVisibility: false,
-        contact: {},
-        contactDetailsVisibility: false,
-        id: Date.now()
-      }
+export default {
+  data() {
+    return {
+      sortedContacts: this.sortContacts(this.contacts),
+      deleteConfirmatioVisibility: false,
+      contact: {},
+      contactDetailsVisibility: false,
+      id: Date.now(),
+      componentKey: 0
+    }
+  },
+
+  props: {
+    contacts: Array,
+  },
+
+  components: {
+    Contact,
+    AddContact,
+    DeleteConfirmation,
+    ContactDetails
+  },
+
+  methods: {
+    sortContacts(contacts) {
+      return contacts.sort((a, b) => a.name.localeCompare(b.name));
     },
 
-    props: {
-      contacts: Array,
+    findContact(id) {
+      return this.sortedContacts.find(contact => contact.id === id)
     },
 
-    components: {
-      Contact,
-      AddContact,
-      DeleteConfirmation,
-      ContactDetails
+    addNewContact(newContact) {
+      this.sortedContacts.push(newContact)
+      this.sortContacts(this.sortedContacts)
     },
 
-    methods: {
-      sortContacts(contacts) {
-        return contacts.sort((a, b) => a.name.localeCompare(b.name));
-      },
+    setDeleteConfirmatioVisibility(id) {
+      this.deleteConfirmatioVisibility = !this.deleteConfirmatioVisibility;
+      this.contact = this.findContact(id);
+    },
 
-      findContact(id) {
-        return this.sortedContacts.find(contact => contact.id === id)
-      },
+    deleteContact() {
+      this.sortedContacts = this.sortedContacts.filter(contact => contact.id !== this.contact.id);
+      this.deleteConfirmatioVisibility = !this.deleteConfirmatioVisibility;
+    },
 
-      addNewContact(newContact) {
-        this.sortedContacts.push(newContact)
-        this.sortContacts(this.sortedContacts)
-      },
+    contactDetails(id) {
+      this.contact = this.findContact(id);
+      this.contactDetailsVisibility = !this.contactDetailsVisibility;
+    },
 
-      setDeleteConfirmatioVisibility(id) {
-        this.deleteConfirmatioVisibility = !this.deleteConfirmatioVisibility;
-        this.contact = this.findContact(id);
-      },
-
-      deleteContact() {
-        this.sortedContacts = this.sortedContacts.filter(contact => contact.id !== this.contact.id);
-        this.deleteConfirmatioVisibility = !this.deleteConfirmatioVisibility;
-      },
-
-      contactDetails(id) {
-        this.contact = this.findContact(id);
-        this.contactDetailsVisibility = !this.contactDetailsVisibility;
-      }
+    forceRerender() {
+      this.componentKey +=1;
     }
   }
+}
 </script>
 
-<style lang="css">
+<style lang="scss">
   .contacts-list {
     display: grid;
     grid-auto-columns: auto;

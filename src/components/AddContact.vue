@@ -1,45 +1,37 @@
 <template>
-  <div class="add-contact">
+  <div class="add_contact">
 
     <form
       action=""
       method="GET"
-      v-bind:class="{add_contact_form_active: inputVisibility, add_contact_form: true}"
+      v-bind:class="{'add_contact__form--active': inputVisibility, add_contact__form: true}"
       @submit.prevent="onSubmit"
     >
       <button
         type="submit"
         id="submit"
-        class="add-contact-button"
+        class="add_contact__button"
         @click="changeVisibilty"
       >
         {{ buttonSymbol }}
       </button>
       <label for="submit">
-        <span v-if="!inputVisibility">
+        <span v-show="!inputVisibility">
           Add contact
         </span>
       </label>
-<!--
-*
-*
-*
-* v-show !!!!
-*
-*
--->
 
       <input
-        v-if="inputVisibility"
-        class="add-contact-input"
+        v-show="inputVisibility"
+        class="add_contact__input"
         type="text"
         v-model="newContactName"
         maxlength="15"
       >
       <button
+        v-show="inputVisibility"
+        class="add_contact__button"
         type="submit"
-        v-if="inputVisibility"
-        class="add-contact-button"
         @click="changeVisibilty"
       >
         &#10005;
@@ -50,46 +42,46 @@
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        newContactName: '',
-        inputVisibility: false,
+export default {
+  data() {
+    return {
+      newContactName: '',
+      inputVisibility: false,
+    }
+  },
+
+  methods: {
+    onSubmit() {
+      if(this.newContactName.trim()) {
+        const newContact = {
+          id: Date.now(),
+          name: this.newContactName
+        }
+
+      this.$emit('add-contact', newContact);
+      this.newContactName = '';
       }
     },
 
-    methods: {
-      onSubmit() {
-        if(this.newContactName.trim()) {
-          const newContact = {
-            id: Date.now(),
-            name: this.newContactName
-          }
+    changeVisibilty() {
+      this.inputVisibility = !this.inputVisibility
+    }
+  },
 
-        this.$emit('add-contact', newContact);
-        this.newContactName = '';
-        }
-      },
-
-      changeVisibilty() {
-        this.inputVisibility = !this.inputVisibility
-      }
-    },
-
-    computed: {
-      buttonSymbol: function() {
-        if (!this.inputVisibility) {
-          return '+';
-        } else {
-          return String.fromCharCode(10003);
-        }
+  computed: {
+    buttonSymbol: function() {
+      if (!this.inputVisibility) {
+        return '+';
+      } else {
+        return String.fromCharCode(10003);
       }
     }
   }
+}
 </script>
 
-<style lang="css">
-  .add-contact {
+<style lang="scss">
+  .add_contact {
     display: flex;
     align-items: center;
 
@@ -102,56 +94,63 @@
     font-size: 26px;
     background:  #7b7b7b;
     color: whitesmoke;
-  }
 
-  .add-contact-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    &__button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-    margin-right: 20px;
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-  
-    background-color: #adabac;
-    color: white;
+      margin-right: 20px;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+    
+      background-color: #adabac;
+      color: white;
 
-    font-size: 38px;
-    cursor: pointer;
-    border: none;
-    outline: none;
-  }
+      font-size: 38px;
+      cursor: pointer;
+      border: none;
+      outline: none;
 
-  .add-contact-button:last-child {
-    margin-right: 0;
-  }
+      &:last-child {
+        margin-right: 0;
+      }
 
-  .add_contact_form {
-    width: 100%;
-    display: flex;
-    align-items: center;
-  }
+      &:hover {
+       background-color: #a1a1a1;
+      }
 
-  .add_contact_form_active {
-    justify-content: space-between;
-  }
+      &:active {
+        transform: scale(0.8);
+      }
+    }
+    
+    &__form {
+      width: 100%;
+      display: flex;
+      align-items: center;
 
-  .add-contact-input {
-    display: flex;
-    margin-right: 20px;
-    width: 190px;
-    height: 50px;
-    border-radius: 5px;
+      &--active {
+        justify-content: space-between;
+      }
+    }
 
-    background-color: rgb(182, 182, 182);
-    color: whitesmoke;
-  
-    cursor: pointer;
-    border: none;
-    outline: none;
-  
-    font-family: inherit;
-    font-size: 100%;
+    &__input {
+      margin-right: 20px;
+      width: 190px;
+      height: 50px;
+      border-radius: 5px;
+
+      background-color: rgb(182, 182, 182);
+      color: whitesmoke;
+    
+      cursor: pointer;
+      border: none;
+      outline: none;
+    
+      font-family: inherit;
+      font-size: 26px;
+    }
   }
 </style>
