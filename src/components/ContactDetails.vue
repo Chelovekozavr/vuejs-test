@@ -12,15 +12,18 @@
       </header>
 
       <section class="contact_details__content">
+
         <span
+          v-if="Object.keys(this.contact).length < 3"
           class="contact_details__no_info"
-          v-if="isEditable"
         >
           No info
         </span>
+
         <ul
           v-else
           class="contact_details__list"
+          :key="forceRenderKey"
         >
           <li
             v-for="(value, title, index) in contact"
@@ -94,10 +97,10 @@
       </footer>
 
     <ContactDetailsEdit
-      v-if="editFormVisibility && !isEditable"
+      v-if="editFormVisibility && (Object.keys(this.contact).length > 2)"
       :contact="contact"
       @cancel-edit="cancelEdit"
-      @submit-editting="setEditFormVisibility"
+      @submit-editting="submitEditing"
     />
 
     <DeleteConfirmation
@@ -115,22 +118,35 @@
 
 <script>
 import Vue from 'vue';
+import { mapMutations } from 'vuex';
 
 import DeleteConfirmation from './DeleteConfirmation';
 import ContactDetailsEdit from './ContactDetailsEdit';
 
 export default {
   name: 'ContactDetails',
-  props: ['contact'],
+  props: {
+    id: {
+      type: Number,
+      required: true
+    }
+  },
 
   components: {
     DeleteConfirmation,
     ContactDetailsEdit
   },
 
+  computed: {
+    contact() {
+      //return this.$store.getters.getSortedContacts.find(contact => contact.id === this.id);
+      return this.$store.getters.getContactById(this.id);
+    }
+  },
+
   data() {
     return {
-
+      forceRenderKey: null,
       deleteConfirmatioVisibility: false,
       keyToDelete: '',
       addFormVisibility: false,
@@ -139,7 +155,6 @@ export default {
         title: '',
         value: '',
       },
-      isEditable: Object.keys(this.contact).length <= 2,
       editCancel: false,
       //newValue: ''
       //prevContact: {...this.contact}
@@ -147,6 +162,12 @@ export default {
   },
 
   methods: {
+    ...mapMutations(['ADD_CONTACT_TO_STATE', 'DELETE_CONTACT_FROM_STATE', 'edit']),
+
+    forceRender() {
+      this.forceRenderKey += 1;
+    },
+
     setDeleteConfirmatioVisibility() {
       this.deleteConfirmatioVisibility = !this.deleteConfirmatioVisibility;
     },
@@ -165,7 +186,12 @@ export default {
     },
 
     addNewKey() {
-      Vue.set(this.contact, this.keyToAdd.title, this.keyToAdd.value)
+      if (!this.keyToAdd.title.trim() || !this.keyToAdd.value.trim()) {
+        return;
+      }
+
+      Vue.set(this.contact, this.keyToAdd.title.trim(), this.keyToAdd.value.trim());
+
       this.addFormVisibility = !this.addFormVisibility;
       this.keyToAdd = {
         title: '',
@@ -188,7 +214,11 @@ export default {
       this.setEditFormVisibility()
     },
 
-
+    submitEditing(newContact) {
+      this.setEditFormVisibility();
+      this.DELETE_CONTACT_FROM_STATE(newContact.id);
+      this.ADD_CONTACT_TO_STATE(newContact);
+    }
   }
 }
 </script>

@@ -13,11 +13,8 @@
     </ul>
     <ContactDetails
       v-if="contactDetailsVisibility"
-      :contact="contact"
       @hide-contact-details="contactDetails"
-      @delete-key="forceRerender"
-      @add-key="forceRerender"
-      :key="componentKey"
+      :id="contact.id"
     />
 
     <DeleteConfirmation
@@ -37,20 +34,21 @@ import AddContact from './AddContact';
 import DeleteConfirmation from './DeleteConfirmation';
 import ContactDetails from './ContactDetails';
 
-
 export default {
   data() {
     return {
       deleteConfirmatioVisibility: false,
       contact: {},
       contactDetailsVisibility: false,
-      id: Date.now(),
-      componentKey: 0,
+      //id: Date.now(),
     }
   },
 
   props: {
-    contacts: Array,
+    contacts: {
+      type: Array,
+      required: true
+    }
   },
 
   components: {
@@ -61,10 +59,13 @@ export default {
   },
 
   methods: {
-    ...mapMutations(['addContactToState', 'deleteContactFromState']),
+    ...mapMutations([
+      'ADD_CONTACT_TO_STATE',
+      'DELETE_CONTACT_FROM_STATE'
+    ]),
 
     addNewContact(newContact) {
-      this.addContactToState(newContact);
+      this.ADD_CONTACT_TO_STATE(newContact);
     },
 
     setDeleteConfirmatioVisibility(id) {
@@ -74,12 +75,8 @@ export default {
 
     deleteContact() {
       this.deleteConfirmatioVisibility = !this.deleteConfirmatioVisibility;
-      this.deleteContactFromState(this.contact.id)
+      this.DELETE_CONTACT_FROM_STATE(this.contact.id)
     },
-
-    forceRerender() {
-      this.componentKey +=1;
-    }
   }
 }
 </script>

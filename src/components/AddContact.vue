@@ -46,7 +46,7 @@ export default {
   data() {
     return {
       newContactName: '',
-      inputVisibility: false,
+      inputVisibility: false
     }
   },
 
@@ -56,7 +56,7 @@ export default {
         const newContact = {
           id: Date.now(),
           name: this.newContactName
-        }
+        };
 
       this.$emit('add-contact', newContact);
       this.newContactName = '';
@@ -64,7 +64,7 @@ export default {
     },
 
     changeVisibilty() {
-      this.inputVisibility = !this.inputVisibility
+      this.inputVisibility = !this.inputVisibility;
     }
   },
 

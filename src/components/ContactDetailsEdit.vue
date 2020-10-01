@@ -1,7 +1,7 @@
 <template>
   <div class="edit_contact">
     <header class="edit_contact__header">
-      <h3>Edit contact info</h3>
+      <h3 :key="forceRenderKey">Edit contact info</h3>
         <button
           class="edit_contact__button"
           @click="$emit('cancel-edit')"
@@ -11,7 +11,7 @@
     </header>
 
     <form
-      @submit.prevent="$emit('submit-editting')"
+      @submit.prevent="$emit('submit-editting', newContact);"
       v-for="(key, title, index) in contact"
       v-show="title !== 'id' && title !== 'name'"
       :key="index"
@@ -21,6 +21,7 @@
       <input
         class="edit_contact__input"
         type="text"
+        maxlength="15"
         :value="title"
         :name="title"
         @input="e => title = e.target.value"
@@ -29,6 +30,7 @@
       <input
         class="edit_contact__input"
         type="text"
+        maxlength="25"
         :value="key"
         @input="e => key = e.target.value"
         @change="editValue(key, title)"
@@ -46,6 +48,8 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+
 export default {
   props: {
     contact: Object,
@@ -53,27 +57,52 @@ export default {
 
   data() {
     return {
+      forceRenderKey: null,
       titleToDel: '',
-      //newTitle: {...this.contact}
+      newContact: {...this.contact},
     }
   },
 
   methods: {
+    ...mapMutations([
+      'ADD_CONTACT_TO_STATE',
+      'DELETE_CONTACT_FROM_STATE'
+    ]),
+
     editValue(key, title) {
-      this.contact[title] = key;
+      this.newContact[title] = key;
     },
 
     editTitle(key, title, name) {
-      this.contact[title] = key;
-      delete this.contact[name]
+      this.newContact[title] = key;
+      delete this.newContact[name]
+    },
+/*
+    editValue(key, title) {
+      this.newContact[title] = key;
     },
 
+    editTitle(key, title, name) {
+      this.newContact[title] = key;
+      delete this.contact[name];
+      this.toDelete = name;
+    },*/
+/*
     editConfirm() {
+      //this.contact = {...this.newContact};
 
-    },
+      this.DELETE_CONTACT_FROM_STATE(this.newContact.id);
+      this.ADD_CONTACT_TO_STATE(this.newContact);
+      this.forceRender();
+    },*/
 
     setTitle(title) {
-      this.titleToDel = title;
+      if(!title) {
+
+        return;
+      }
+
+      this.titleToDel = title.trim();
       delete this.contact[title]
     }
   }

@@ -9,20 +9,23 @@ export default {
     ]
   },
 
-
   getters: {
     getSortedContacts(state) {
       return state.contacts.sort((a, b) => a.name.localeCompare(b.name));
+    },
+
+    getContactById: (state) => (id) => {
+      return state.contacts.find(contact => contact.id === id);
     }
   },
 
   mutations: {
-    addContactToState(state, newContact) {
-      state.contacts.push(newContact);
+    ADD_CONTACT_TO_STATE(state, newContact) {
+      state.contacts.unshift(newContact);
     },
 
-    deleteContactFromState(state, id) {
-      state.contacts = state.contacts.filter(contact => contact.id !== id)
+    DELETE_CONTACT_FROM_STATE(state, id) {
+      state.contacts = state.contacts.filter(contact => contact.id !== id);
     },
   }
 }
