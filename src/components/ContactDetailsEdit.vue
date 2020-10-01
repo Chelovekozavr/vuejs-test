@@ -10,34 +10,38 @@
         </button>
     </header>
 
-    <ul
+    <form
+      @submit.prevent="$emit('submit-editting')"
+      v-for="(key, title, index) in contact"
+      v-show="title !== 'id' && title !== 'name'"
+      :key="index"
       class="edit_contact__list"
+      id="submitKeys"
     >
-      <li
-        v-for="(value, title, index) in contact"
-        v-show="title !== 'id'"
-        :key="index"
-        class="edit_contact__item"
+      <input
+        class="edit_contact__input"
+        type="text"
+        :value="title"
+        :name="title"
+        @input="e => title = e.target.value"
+        @change="e => editTitle(key, title, e.target.name)"
       >
-        <input
-          class="edit_contact__input"
-          type="text"
-          :value=title
-        >
-        <input
-          class="edit_contact__input"
-          type="text"
-          :value=value
-        >
+      <input
+        class="edit_contact__input"
+        type="text"
+        :value="key"
+        @input="e => key = e.target.value"
+        @change="editValue(key, title)"
+      >
+    </form>
 
-
-      </li>
-    </ul>
     <button
       class="edit_contact__submit_button"
+      form="submitKeys"
     >
       Submit
     </button>
+
   </div>
 </template>
 
@@ -45,6 +49,33 @@
 export default {
   props: {
     contact: Object,
+  },
+
+  data() {
+    return {
+      titleToDel: '',
+      //newTitle: {...this.contact}
+    }
+  },
+
+  methods: {
+    editValue(key, title) {
+      this.contact[title] = key;
+    },
+
+    editTitle(key, title, name) {
+      this.contact[title] = key;
+      delete this.contact[name]
+    },
+
+    editConfirm() {
+
+    },
+
+    setTitle(title) {
+      this.titleToDel = title;
+      delete this.contact[title]
+    }
   }
 }
 </script>
@@ -52,16 +83,13 @@ export default {
 <style lang="scss" scoped>
   .edit_contact {
     width: 380px;
+    height: 100%;
     background-color: #4e4e4e;
 
-    position: fixed;
-    top: 200px;
-
-
-
-    margin: 10px;
+    position: absolute;
+    top: 0;
+    left: 0;
     padding: 20px;
-
 
     border-radius: 15px;
     font-size: 26px;
@@ -89,7 +117,7 @@ export default {
     &__list {
       width: 100%;
       padding: 0;
-      margin: 0;
+      margin: 20px 0;
       list-style: none;
     }
 
@@ -110,6 +138,7 @@ export default {
 
     &__input {
       margin-right: 10px;
+
       padding: 5px;
       width: 160px;
       height: 15px;
@@ -146,9 +175,11 @@ export default {
     }
 
     &__submit_button {
+      position: absolute;
+      bottom: 30px;
+      left: calc(50% - 120px / 2);
       height: 40px;
       width: 120px;
-      margin-top: 20px;
 
       border-radius: 20px;
       font-size: 14px;

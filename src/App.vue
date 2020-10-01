@@ -1,13 +1,10 @@
 <template>
   <div id="app">
-    <ContactsList
-      :contacts="contacts"
-    />
+    <router-view />
   </div>
 </template>
 
 <script>
-import ContactsList from '@/components/ContactsList.vue'
 
 export default {
   name: 'App',
@@ -22,8 +19,9 @@ export default {
       ]
     }
   },
+
   components: {
-    ContactsList
+
   }
 }
 </script>
@@ -31,13 +29,13 @@ export default {
 <style>
   body {
     background-color: #272727;
+    margin: 0;
   }
 
   #app {
     display: flex;
     flex-direction: column;
     align-items: center;
-
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

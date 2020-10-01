@@ -22,7 +22,7 @@
       </label>
 
       <input
-        v-show="inputVisibility"
+        v-if="inputVisibility"
         class="add_contact__input"
         type="text"
         v-model="newContactName"
@@ -85,7 +85,6 @@ export default {
     display: flex;
     align-items: center;
 
-    margin: 10px;
     padding: 20px;
     height: 70px;
     width: 380px;
@@ -112,6 +111,8 @@ export default {
       cursor: pointer;
       border: none;
       outline: none;
+      transition: background-color 0.3s ease,
+        transform 0.3s ease;
 
       &:last-child {
         margin-right: 0;

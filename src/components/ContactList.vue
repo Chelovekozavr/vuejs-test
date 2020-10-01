@@ -1,15 +1,14 @@
 <template>
-  <div>
+  <div class="content_container">
     <AddContact
-        @add-contact="addNewContact"
+      @add-contact="addNewContact"
     />
-    <ul class="contacts-list">
+    <ul class="contacts_list">
       <Contact
-        v-for="contact of sortedContacts"
+        v-for="contact of contacts"
         :key="contact.id"
         :contact="contact"
         @delete-contact="setDeleteConfirmatioVisibility"
-        @contact-details="contactDetails"
       />
     </ul>
     <ContactDetails
@@ -31,6 +30,8 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+
 import Contact from './Contact.vue';
 import AddContact from './AddContact';
 import DeleteConfirmation from './DeleteConfirmation';
@@ -40,12 +41,11 @@ import ContactDetails from './ContactDetails';
 export default {
   data() {
     return {
-      sortedContacts: this.sortContacts(this.contacts),
       deleteConfirmatioVisibility: false,
       contact: {},
       contactDetailsVisibility: false,
       id: Date.now(),
-      componentKey: 0
+      componentKey: 0,
     }
   },
 
@@ -61,32 +61,20 @@ export default {
   },
 
   methods: {
-    sortContacts(contacts) {
-      return contacts.sort((a, b) => a.name.localeCompare(b.name));
-    },
-
-    findContact(id) {
-      return this.sortedContacts.find(contact => contact.id === id)
-    },
+    ...mapMutations(['addContactToState', 'deleteContactFromState']),
 
     addNewContact(newContact) {
-      this.sortedContacts.push(newContact)
-      this.sortContacts(this.sortedContacts)
+      this.addContactToState(newContact);
     },
 
     setDeleteConfirmatioVisibility(id) {
       this.deleteConfirmatioVisibility = !this.deleteConfirmatioVisibility;
-      this.contact = this.findContact(id);
+      this.contact = this.contacts.find(contact => contact.id === id);
     },
 
     deleteContact() {
-      this.sortedContacts = this.sortedContacts.filter(contact => contact.id !== this.contact.id);
       this.deleteConfirmatioVisibility = !this.deleteConfirmatioVisibility;
-    },
-
-    contactDetails(id) {
-      this.contact = this.findContact(id);
-      this.contactDetailsVisibility = !this.contactDetailsVisibility;
+      this.deleteContactFromState(this.contact.id)
     },
 
     forceRerender() {
@@ -97,13 +85,23 @@ export default {
 </script>
 
 <style lang="scss">
-  .contacts-list {
+  .content_container {
+    margin-top: 20px;
+    border-radius: 15px;
+    padding: 10px;
+    -webkit-box-shadow: 0px 0px 60px 40px rgba(0,0,0,0.5);
+    -moz-box-shadow: 0px 0px 60px 40px rgba(0,0,0,0.5);
+    box-shadow: 0px 0px 60px 40px rgba(0,0,0,0.5);
+  }
+
+  .contacts_list {
     display: grid;
     grid-auto-columns: auto;
-    position: absolute;
 
-    padding: 0;
+    grid-gap: 20px;
     margin: 0;
+    margin-top: 20px;
+    padding: 0;
     list-style: none;
   }
 </style>

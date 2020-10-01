@@ -1,22 +1,20 @@
 <template>
-  <div>
-
     <div class="contact_details contact_details__backdrop">
       <header class="contact_details__header">
-        <h3 class="contact_details__header_title">{{contact.name}}</h3>
-        <button
+        <h3 class="contact_details__header_title">{{ contact.name }}</h3>
+        <router-link
+          to="/home"
+          tag="button"
           class="contact_details__header_button"
-          @click="$emit('hide-contact-details')"
         >
           &#10005;
-        </button>
+        </router-link>
       </header>
 
       <section class="contact_details__content">
-
         <span
           class="contact_details__no_info"
-          v-if="Object.keys(contact).length <= 2"
+          v-if="isEditable"
         >
           No info
         </span>
@@ -31,7 +29,7 @@
             class="contact_details__item"
           >
             <span class="contact_details__item_title">
-              {{title[0].toUpperCase() + title.slice(1) + ':'}}
+              {{ title[0].toUpperCase() + title.slice(1) + ':' }}
             </span>
             <span>
               {{ value }}
@@ -42,7 +40,6 @@
             >
               &#10005;
             </button>
-
           </li>
         </ul>
       </section>
@@ -81,7 +78,7 @@
           class="contact_details__footer_button"
           @click="setAddFormVisibility"
         >
-          {{!addFormVisibility ? 'Add' : 'Cancel'}}
+          {{ !addFormVisibility ? 'Add' : 'Cancel' }}
         </button>
         <button
           class="contact_details__footer_button"
@@ -89,37 +86,42 @@
         >
           Edit
         </button>
-        <button class="contact_details__footer_button">
+        <button
+          class="contact_details__footer_button"
+        >
           Undo changes
         </button>
       </footer>
-    </div>
 
     <ContactDetailsEdit
-      v-if="editFormVisibility"
+      v-if="editFormVisibility && !isEditable"
       :contact="contact"
       @cancel-edit="cancelEdit"
+      @submit-editting="setEditFormVisibility"
     />
 
     <DeleteConfirmation
       v-if="deleteConfirmatioVisibility"
       @delete-cancel="setDeleteConfirmatioVisibility"
       @delete-ok="deleteContactKey"
+      @cancel-edit="editCanceled"
       :name="contact.name"
       :item="keyToDelete"
+      :cancel="editCancel"
     />
 
   </div>
 </template>
 
 <script>
+import Vue from 'vue';
+
 import DeleteConfirmation from './DeleteConfirmation';
-import ContactDetailsEdit from './ContactDetailsEdit'
+import ContactDetailsEdit from './ContactDetailsEdit';
 
 export default {
-  props: {
-    contact: Object,
-  },
+  name: 'ContactDetails',
+  props: ['contact'],
 
   components: {
     DeleteConfirmation,
@@ -128,6 +130,7 @@ export default {
 
   data() {
     return {
+
       deleteConfirmatioVisibility: false,
       keyToDelete: '',
       addFormVisibility: false,
@@ -136,7 +139,10 @@ export default {
         title: '',
         value: '',
       },
+      isEditable: Object.keys(this.contact).length <= 2,
+      editCancel: false,
       //newValue: ''
+      //prevContact: {...this.contact}
     }
   },
 
@@ -151,7 +157,7 @@ export default {
 
     deleteContactKey() {
       this.deleteConfirmatioVisibility = !this.deleteConfirmatioVisibility;
-      delete (this.contact[this.keyToDelete])
+      Vue.delete(this.contact, this.keyToDelete);
     },
 
     setAddFormVisibility() {
@@ -159,7 +165,7 @@ export default {
     },
 
     addNewKey() {
-      this.contact[this.keyToAdd.title] = this.keyToAdd.value;
+      Vue.set(this.contact, this.keyToAdd.title, this.keyToAdd.value)
       this.addFormVisibility = !this.addFormVisibility;
       this.keyToAdd = {
         title: '',
@@ -170,15 +176,19 @@ export default {
     setEditFormVisibility() {
       this.editFormVisibility = !this.editFormVisibility;
     },
-/*
-    editContact(value) {
-      console.log(value)
-      console.log(234)
-    }
-*/
+
     cancelEdit() {
-      this.editFormVisibility = !this.editFormVisibility;
-    }
+      this.deleteConfirmatioVisibility = !this.deleteConfirmatioVisibility;
+      this.editCancel = true;
+    },
+
+    editCanceled() {
+      this.deleteConfirmatioVisibility = !this.deleteConfirmatioVisibility;
+      this.editCancel = !this.editCancel;
+      this.setEditFormVisibility()
+    },
+
+
   }
 }
 </script>
@@ -191,13 +201,18 @@ export default {
     position: fixed;
     top: 200px;
 
-    margin: 10px;
     padding: 20px;
 
 
     border-radius: 15px;
     font-size: 26px;
     color: whitesmoke;
+
+    &__backdrop {
+      -webkit-box-shadow: 0px 0px 60px 40px rgba(0,0,0,0.5);
+      -moz-box-shadow: 0px 0px 60px 40px rgba(0,0,0,0.5);
+      box-shadow: 0px 0px 60px 40px rgba(0,0,0,0.5);
+    }
 
     &__header {
       position: relative;
@@ -233,7 +248,7 @@ export default {
     }
 
     &__header_button {
-      padding: 0;
+      padding: 5px;
       font-size: 24px;
       outline: none;
       border: none;
@@ -241,7 +256,8 @@ export default {
       background-color: inherit;
       color: inherit;
       cursor: pointer;
-      transition: 0.2s;
+      transition: color 0.3s ease,
+        transform 0.3s ease;
 
       &:hover {
         color: #c0c0c0;
@@ -272,11 +288,20 @@ export default {
       margin-bottom: 20px;
 
 
-
       //mixin here
 
       &:last-child {
         margin-bottom: 30px;
+      }
+
+      &:hover {
+        button {
+          opacity: 1;
+        }
+      }
+
+      button {
+        opacity: 0;
       }
     }
 
@@ -297,8 +322,10 @@ export default {
       color: inherit;
       background-color: #4e4e4e;
       cursor: pointer;
-      transition: 0.2s;
-
+      transition: opacity 0.3s ease,
+        background-color 0.3s ease,
+        transform 0.3s ease;
+  
       &:hover {
         background-color: #666666;
       }
@@ -317,7 +344,6 @@ export default {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 30px;
     }
 
     &__input {
@@ -335,23 +361,18 @@ export default {
     
       font-family: inherit;
       font-size: 18px;
-
-      &--edit {
-        width: 200px;
-        height: 15px;
-      }
     }
 
     &__footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-top: 40px;
     }
 
     &__footer_button {
       height: 40px;
       width: 120px;
-      margin-top: 20px;
 
       border-radius: 20px;
       font-size: 14px;
@@ -361,7 +382,8 @@ export default {
       color: inherit;
       background-color: #4e4e4e;
       cursor: pointer;
-      transition: 0.2s;
+      transition: background-color 0.3s ease,
+        transform 0.3s ease;
 
       &:hover {
         background-color: #666666;
@@ -370,10 +392,6 @@ export default {
       &:active {
         transform: scale(0.9);
       }
-    }
-
-    &__backdrop {
-      box-shadow: 0 0 0 100vw rgba(0,0,0,0.8);
     }
   }
 

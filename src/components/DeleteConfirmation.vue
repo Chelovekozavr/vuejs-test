@@ -1,10 +1,28 @@
 <template>
   <div class="delete_confirmation delete_backdrop">
-    <p class="delete_confirmation__text">
-      Are you sure you want to delete {{!item ? name : `${name} ${item}`}}?
+    <p
+      v-if="cancel"
+      class="delete_confirmation__text"
+    >
+      Are you sure you want to cancel?
+    </p>
+    <p
+      v-else
+      class="delete_confirmation__text"
+    >
+      Are you sure you want to delete {{ !item ? name : `${name} ${item}` }}?
     </p>
     <div class="delete_confirmation__buttons_container">
       <button
+        v-if="cancel"
+        class="delete_confirmation__delete_button
+          delete_confirmation__delete_button--ok"
+        @click="$emit('cancel-edit')"
+      >
+        &#10003;
+      </button>
+      <button
+        v-else
         class="delete_confirmation__delete_button
           delete_confirmation__delete_button--ok"
         @click="$emit('delete-ok')"
@@ -27,7 +45,7 @@ export default {
   props: {
     name: String,
     item: String,
-    editCanceled: Boolean
+    cancel: Boolean
   },
 }
 </script>
@@ -41,7 +59,6 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    margin: 10px;
     position: fixed;
     top: 200px;
     left: calc(50% - (290px / 2));

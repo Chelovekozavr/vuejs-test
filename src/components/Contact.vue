@@ -3,16 +3,19 @@
     class="contact"
     @mouseenter="mouseHover"
     @mouseleave="mouseHover"
-    @click.prevent="$emit('contact-details', contact.id)"
   >
-    <div class="contact_container">
+    <router-link
+      class="contact__link"
+      :to="{ name: 'ContactDetails', params: { id: contact.id, contact: contact }}"
+    >
       <span class="contact__initials">
         {{getContactInitials(contact.name)}}
       </span>
       <span>
         {{ contact.name }}
       </span>
-    </div>
+
+    </router-link>
     <button
       id="btn"
       v-show="deleteButtonVisibility"
@@ -22,6 +25,7 @@
       &#10005;
     </button>
   </li>
+
 </template>
 
 <script>
@@ -36,7 +40,6 @@ export default {
   data() {
     return {
       deleteButtonVisibility: false,
-      isActive: false
     }
   },
 
@@ -56,7 +59,6 @@ export default {
     },
 
     mouseHover() {
-      this.isActive = !this.isActive;
       this.deleteButtonVisibility = !this.deleteButtonVisibility;
     }
   }
@@ -64,17 +66,10 @@ export default {
 </script>
 
 <style lang="scss">
-  .contact_container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
   .contact {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 10px;
     padding: 20px;
 
     height: 70px;
@@ -86,10 +81,19 @@ export default {
     color: whitesmoke;
 
     cursor: pointer;
-    transition: 0.5s;
+    transition: background-color 0.5s ease;
 
     &:hover {
       background-color: #666666;
+    }
+
+    &__link {
+      display: flex;
+      align-items: center;
+      width: 300px;
+      outline: none;
+      text-decoration: none;
+      color: inherit;
     }
 
     &__initials {
@@ -117,7 +121,8 @@ export default {
       color: inherit;
       background-color: #adabac;
       cursor: pointer;
-      transition: 0.2s;
+      transition: background-color 0.3s ease, 
+        transform 0.3s ease;
 
       &:hover {
        background-color: #a1a1a1;
